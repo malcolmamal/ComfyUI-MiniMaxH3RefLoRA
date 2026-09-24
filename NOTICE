@@ -1,0 +1,24 @@
+ComfyUI-MiniMaxH3RefLoRA
+Copyright 2026 Malcolm Reynolds KS
+
+Licensed under the MIT License. See LICENSE.
+
+This pack builds directly on two other projects, with thanks:
+
+  ComfyUI-MiniMaxH3Mod — Luisa (luisacaotica) — MIT
+    https://github.com/Luisacaotica/ComfyUI-MiniMaxH3Mod
+    The RefLoRA container's reference half IS that pack's version-5 bundle format
+    (BUNDLE_FORMAT.md), unchanged: `ref_0..ref_n` tensors with a `refmod_meta` header.
+    Nothing here invents a new reference format. Ported from it, with credit:
+      - the ref-block layout the DiT's packed sequence consumes (core.py)
+      - `_blur_latent` and the strength/curve maths (core.py) — verified bit-identical
+      - the OUTER_SAMPLE model-attachment technique (continuum_bridge.py)
+
+  Fizgig — Peter Neill — Apache-2.0
+    The compact curve implementation in refmod.py follows
+    `fizgig.minimax.refmod_apply`, whose formulas are themselves pinned against the
+    node pack by a parity test.
+
+Because the container is the existing bundle format rather than a new one, an
+unmodified install of ComfyUI-MiniMaxH3Mod reads the references out of any RefLoRA
+this pack produces.

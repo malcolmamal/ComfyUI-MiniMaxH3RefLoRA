@@ -1,0 +1,318 @@
+{
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "MinimaxH3\\minimax_h3_fl2va_pruned_int8_convrot.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": {
+      "title": "MiniMax H3 Diffusion Model"
+    }
+  },
+  "2": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors",
+      "type": "minimax",
+      "device": "default"
+    },
+    "_meta": {
+      "title": "MiniMax H3 Qwen3-VL Encoder"
+    }
+  },
+  "3": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "minimax_h3_video_vae_fp16.safetensors"
+    },
+    "_meta": {
+      "title": "MiniMax H3 Video VAE"
+    }
+  },
+  "4": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "minimax_h3_audio_vae_fp32.safetensors"
+    },
+    "_meta": {
+      "title": "MiniMax H3 Audio VAE"
+    }
+  },
+  "10": {
+    "class_type": "PathchSageAttentionKJ",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "sage_attention": "auto",
+      "allow_compile": false
+    },
+    "_meta": {
+      "title": "Patch Sage Attention KJ"
+    }
+  },
+  "11": {
+    "class_type": "ApplyMiniMaxH3FirstBlockCache",
+    "inputs": {
+      "model": [
+        "10",
+        0
+      ],
+      "mode": "H3 Fast — 0.10 / max 2",
+      "threshold": 0.1,
+      "start_percent": 0.1,
+      "end_percent": 0.95,
+      "max_consecutive_hits": 2,
+      "temporal_guard": true
+    },
+    "_meta": {
+      "title": "MiniMax H3 FirstBlockCache (Fast)"
+    }
+  },
+  "12": {
+    "class_type": "Power Lora Loader (rgthree)",
+    "inputs": {
+      "model": [
+        "11",
+        0
+      ],
+      "clip": [
+        "2",
+        0
+      ],
+      "lora_1": {
+        "on": true,
+        "lora": "MinimaxH3\\special\\minimax_h3_fl2v_turbo_8step_v1.0_comfyui_bf16.safetensors",
+        "strength": 1.0,
+        "strength_clip": 1.0
+      },
+      "lora_2": {
+        "on": false,
+        "lora": "None",
+        "strength": 1.0,
+        "strength_clip": 1.0
+      },
+      "lora_3": {
+        "on": false,
+        "lora": "None",
+        "strength": 1.0,
+        "strength_clip": 1.0
+      },
+      "lora_4": {
+        "on": false,
+        "lora": "None",
+        "strength": 1.0,
+        "strength_clip": 1.0
+      }
+    },
+    "_meta": {
+      "title": "LoRA Stack (LightX v1.0 8-Step Turbo)"
+    }
+  },
+  "20": {
+    "class_type": "MiniMaxH3ImageToVideo",
+    "inputs": {
+      "clip": [
+        "30",
+        1
+      ],
+      "vae": [
+        "3",
+        0
+      ],
+      "prompt": "subject_definitions:\n<Subject 1> Gosia, realistic mature woman, authentic natural appearance, warm brown eyes, brown hair, wearing a casual red top\n\nintegrated_multimodal_description:\n[Shot 1] Live-action, 35mm cinematic photograph, fine film grain, natural soft warm golden hour sunlight, sun-drenched terrace garden with green foliage, soft shallow depth of field background. Continuous unbroken take, no cut. Opens as a medium shot framing <Subject 1> Gosia sitting naturally in the garden, smiling warmly. The shot opens with <Subject 1> Gosia already speaking, with no silent establishing beat. The camera moves in a smooth, continuous push-in gliding into an intimate, sharp close-up on her face and natural expressive smile. Never freeze. Never hold static. Speaking English in Gosia's natural voice, and only the quoted words are spoken, <Subject 1> Gosia (S1) says: <d>Good morning from the terrace garden! There is nothing quite like this warm golden sunlight.</d>\n\noverall_soundscape:\nWarm garden breeze, soft rustle of leaves, and Gosia's clear acoustic vocal presence.\n\nnon_diegetic_music:\nN/A",
+      "width": 768,
+      "height": 1344,
+      "length": 124
+    },
+    "_meta": {
+      "title": "MiniMax H3 Prompt & Conditioning"
+    }
+  },
+  "30": {
+    "class_type": "MiniMaxH3RefLoRALoader",
+    "inputs": {
+      "model": [
+        "12",
+        0
+      ],
+      "clip": [
+        "12",
+        1
+      ],
+      "reflora_name": "MinimaxH3\\reflora\\minimaxh3_gosia_v1_reflora.safetensors",
+      "lora_strength": 1.0,
+      "lora_strength_clip": 1.0,
+      "refmod_retention": 1.0,
+      "members": "all",
+      "components": "All",
+      "attach_to_model": false,
+      "max_total_tokens": 0,
+      "show_info": true
+    },
+    "_meta": {
+      "title": "Load H3 RefLoRA (LoRA + RefMod in one file)"
+    }
+  },
+  "31": {
+    "class_type": "MiniMaxH3RefLoRAApply",
+    "inputs": {
+      "conditioning": [
+        "20",
+        0
+      ],
+      "mods": [
+        "30",
+        2
+      ],
+      "retention": 1.0,
+      "max_total_tokens": 0
+    },
+    "_meta": {
+      "title": "Apply H3 RefLoRA References"
+    }
+  },
+  "40": {
+    "class_type": "RandomNoise",
+    "inputs": {
+      "noise_seed": 42001
+    },
+    "_meta": {
+      "title": "Random Noise Seed"
+    }
+  },
+  "41": {
+    "class_type": "BasicGuider",
+    "inputs": {
+      "model": [
+        "30",
+        0
+      ],
+      "conditioning": [
+        "31",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Basic Guider"
+    }
+  },
+  "42": {
+    "class_type": "KSamplerSelect",
+    "inputs": {
+      "sampler_name": "euler"
+    },
+    "_meta": {
+      "title": "Sampler Select (Euler)"
+    }
+  },
+  "43": {
+    "class_type": "BasicScheduler",
+    "inputs": {
+      "model": [
+        "30",
+        0
+      ],
+      "scheduler": "simple",
+      "steps": 8,
+      "denoise": 1.0
+    },
+    "_meta": {
+      "title": "Basic Scheduler (8 Steps Turbo)"
+    }
+  },
+  "44": {
+    "class_type": "SamplerCustomAdvanced",
+    "inputs": {
+      "noise": [
+        "40",
+        0
+      ],
+      "guider": [
+        "41",
+        0
+      ],
+      "sampler": [
+        "42",
+        0
+      ],
+      "sigmas": [
+        "43",
+        0
+      ],
+      "latent_image": [
+        "20",
+        1
+      ]
+    },
+    "_meta": {
+      "title": "Sampler Custom Advanced"
+    }
+  },
+  "50": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "44",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Decode Video"
+    }
+  },
+  "51": {
+    "class_type": "VAEDecodeAudio",
+    "inputs": {
+      "samples": [
+        "44",
+        0
+      ],
+      "vae": [
+        "4",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Decode Audio"
+    }
+  },
+  "52": {
+    "class_type": "CreateVideo",
+    "inputs": {
+      "images": [
+        "50",
+        0
+      ],
+      "audio": [
+        "51",
+        0
+      ],
+      "fps": 24.0,
+      "bit_depth": 8
+    },
+    "_meta": {
+      "title": "Create Video Mux"
+    }
+  },
+  "53": {
+    "class_type": "SaveVideo",
+    "inputs": {
+      "video": [
+        "52",
+        0
+      ],
+      "filename_prefix": "video/reflora_test_gosia_v1",
+      "format": "auto",
+      "codec": "auto"
+    },
+    "_meta": {
+      "title": "Save Video MP4"
+    }
+  }
+}
