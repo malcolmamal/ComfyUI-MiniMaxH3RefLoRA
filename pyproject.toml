@@ -1,0 +1,17 @@
+[project]
+name = "comfyui-minimaxh3reflora"
+description = "One .safetensors holding a MiniMax H3 LoRA and its RefMod references."
+version = "0.1.0"
+license = "MIT"
+dependencies = []
+
+[project.urls]
+Repository = "https://github.com/malcolmamal/ComfyUI-MiniMaxH3RefLoRA"
+#  Used by Comfy Registry https://registry.comfy.org
+"Bug Tracker" = "https://github.com/malcolmamal/ComfyUI-MiniMaxH3RefLoRA/issues"
+
+[tool.comfy]
+PublisherId = "malcolmrey"
+DisplayName = "ComfyUI-MiniMaxH3RefLoRA"
+Icon = ""
+includes = []
